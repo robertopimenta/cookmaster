@@ -3,6 +3,9 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+// imports models
+const Users = require('./models/users.model');
+
 const PORT = 5000;
 
 mongoose.connect('mongodb://localhost:27017/Cookmaster', {
@@ -22,10 +25,19 @@ app.get('/index', (req, res) => {
     });
 });
 
-app.post('/novoUsuario', (req, res) => {
+app.post('/novoUsuario', async (req, res) => {
     const dados = req.body;
-    console.log(dados);
-})
+    //console.log(dados);
+    await Users.create(dados).then((user) => {
+        return res.status(201).json({
+            user
+        });
+    }).catch((err) => {
+        return res.status(400).json({
+            err
+        });
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
